@@ -6,6 +6,7 @@ import (
     "io"
     "bufio"
     "strings"
+    "strconv"
 )
 
 type stringOperation func(string)
@@ -72,27 +73,82 @@ func findNutrientIds() []string {
     return nutIds
 }
 
+func nutrientName(id string) string {
+    var retString string = ""
+
+    doForEachLine(func (line string) {
+        elements := strings.Split(line,"$")
+        if elements[0] == id {
+            retString = elements[4]
+        }
+    }, "NT_NM.txt")
+
+    if(retString != "") {
+        return retString
+    }
+
+    return "Not found"
+}
+
+func foodName(id string) string {
+    var retString string = ""
+    doForEachLine(func (line string) {
+        elements := strings.Split(line,"$")
+        if elements[0] == id {
+            retString = elements[4]
+        }
+    }, "FOOD_NM.txt")
+    
+    if(retString != "") {
+        return retString
+    }
+
+    return "Not found"
+}
+
+func nutrientAmnts(foodId string) [870]string {
+    var retArray [870]string
+    doForEachLineExceptFirst(func (line string) {
+        elements := strings.Split(line,"$")
+        if elements[0] == foodId{
+            nid, err := strconv.Atoi(elements[1])
+            if err != nil { panic(err) }
+            retArray[nid] = elements[2]
+        }
+    }, "NT_AMT.txt")
+
+    return retArray
+}
+
 func main(){
     //find a list of all food ids
     foodIds := findFoodIds()
     //find a list of all nutrient ids
     nutIds := findNutrientIds()
-/*
+    //generate an array of foods and nutrients in a multidimensional array
     
     //Print the header for the file
-    printf("FoodName")
-    for nutrientId in nutrientIds {
-        printf("$")
-        printf(nutrientName(nutrientId))
+    fmt.Print("\"FOOD NAME\"")
+    for i := 0 ; i < len(nutIds) ; i++ {
+        fmt.Print("$")
+        fmt.Print(nutrientName(nutIds[i]))
     }
-    printf("\n")
+    fmt.Println("")
+    
+    for i := 0 ; i < len(foodIds) ; i++ {
+        fmt.Print(foodName(foodIds[i]))
+        nutrients := nutrientAmnts(foodIds[i])
 
-    for in foodIDs {
-        printf(foodName)
-        for in nutrientIds {
-            printf("$")
-            printf(nutrientAmnt(nutrientId,foodId))
+        for k := 0 ; k < len(nutIds) ; k++ {
+            fmt.Print("$")
+            nid, err := strconv.Atoi(nutIds[k])
+            if  err != nil { panic(err) }
+            if nutrients[nid] == "" {
+                fmt.Print("0")
+            } else {
+                fmt.Print(nutrients[nid])
+            }
         }
-        printf("\n")
-    }*/
+        fmt.Println("")
+    }
 }
