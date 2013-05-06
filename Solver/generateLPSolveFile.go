@@ -70,12 +70,26 @@ func main(){
                 fmt.Print(elements[i] + "x" + strconv.Itoa(i + 1))
             }
         }
-        fmt.Println(" = " + elements[len(elements) - 1] + ";")
+        fmt.Println(" <= " + elements[len(elements) - 1] + ";")
         numberOfVariables = len(elements)
-    }, "NutrientMatrix")
+    }, "NutrientMatrixUpper")
+    
+    doForEachLineExceptFirst(func (line string) {
+        elements := strings.Split(line,"$")
+        for i := 0 ; i < len(elements) - 1 ; i++ {
+            if i > 0 {
+                fmt.Print(" + " + elements[i] + "x" + strconv.Itoa(i + 1))
+            } else {
+                fmt.Print(elements[i] + "x" + strconv.Itoa(i + 1))
+            }
+        }
+        fmt.Println(" >= " + elements[len(elements) - 1] + ";")
+        numberOfVariables = len(elements)
+    }, "NutrientMatrixLower")
 
     //Now we print out the greater than zero constraints:
     for i := 0 ; i < numberOfVariables ; i++ {
-        fmt.Println("x" + strconv.Itoa(i + 1) + " >= -99999999;")
+        fmt.Println("x" + strconv.Itoa(i + 1) + " >= 0;")
+
     }
 }

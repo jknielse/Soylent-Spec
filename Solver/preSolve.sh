@@ -1,7 +1,21 @@
-cat ../Sources/finalComponentsList > ../Sources/finalNutrientsMatrixList
-cat ../Sources/desiredNutrients >> ../Sources/finalNutrientsMatrixList
-go run ./transpose.go ../Sources/finalNutrientsMatrixList > ./InitialNutrientMatrix
-#now that we have a a nutrient matrix, we need to trim the rows that we don't want:
-cat ./InitialNutrientMatrix | grep -v '$NA' > NutrientMatrix
-rm InitialNutrientMatrix
-go run ./generateLPSolveFile.go > lpfile
+go run ./transpose.go ../Sources/desiredNutrientsInputFile > desiredNutrientsTemp
+
+cat ../Sources/finalComponentsList > nutrientsMatrixListLower
+awk 'NR==1' desiredNutrientsTemp >> nutrientsMatrixListLower
+go run ./transpose.go nutrientsMatrixListLower > nutrientsMatrixListLowerTranspose
+
+cat ../Sources/finalComponentsList > nutrientsMatrixListUpper
+awk 'NR==2' desiredNutrientsTemp >> nutrientsMatrixListUpper
+go run ./transpose.go nutrientsMatrixListUpper > nutrientsMatrixListUpperTranspose
+
+
+#now that we have a nutrient matrix, we need to trim the rows that we don't want:
+cat ./nutrientsMatrixListUpperTranspose | grep -v '$NA' > NutrientMatrixUpper
+cat ./nutrientsMatrixListLowerTranspose | grep -v '$NA' > NutrientMatrixLower
+go run ./generateLPSolveFile.go > lpfiletemp
+cat lpfiletemp | grep -v "NA" > lpfile
+
+rm lpfiletemp
+rm nutrientsMatrixListLower
+rm nutrientsMatrixListUpper
+rm nutrientsMatrixListUpperTranspose

@@ -69,6 +69,6 @@ func main(){
                 fmt.Println(elements[arg]) 
                 i = 1
             }
-        }, "NutrientMatrix")
+        }, "nutrientsMatrixListLowerTranspose")
     }
 }
