@@ -54,6 +54,41 @@ func doForEachLineExceptFirst(do stringOperation, filename string) {
     }, filename)
 }
 
+func printAmount(amount, foodName string) {
+    var foodId string
+    var measId string
+    var convAmt string
+    var measName string
+
+    //determine the food id
+    doForEachLineExceptFirst(func (line string) {
+        elements := strings.Split(line,"$")
+        if(elements[4] == foodName) {
+            foodId = elements[0]
+        }
+    }, "../Sources/Canadian Database/FOOD_NM.txt")
+
+    //find the measure id and conv amt
+    first := true
+    doForEachLineExceptFirst(func (line string) {
+        elements := strings.Split(line,"$")
+        if(elements[0] == foodId && first) {
+            measId = elements[1]
+            convAmt = elements[2]
+            first = false
+        }
+    }, "../Sources/Canadian Database/CONV_FAC.txt")
+
+    //find the measName
+    doForEachLineExceptFirst(func (line string) {
+        elements := strings.Split(line,"$")
+        if(elements[0] == measId) {
+            measName = elements[1]
+        }
+    }, "../Sources/Canadian Database/MEASURE.txt")
+    fmt.Println(convAmt + " of " + measName)
+}
+
 func main(){
     flag.Parse()
     if (flag.NArg() != 1) {
@@ -66,7 +101,7 @@ func main(){
         doForEachLine(func (line string) {
             elements := strings.Split(line,"$")
             if i == 0 {
-                fmt.Println(elements[arg])
+                printAmount("1", elements[arg])
                 i = 1
             }
         }, "nutrientsMatrixListLowerTranspose")
